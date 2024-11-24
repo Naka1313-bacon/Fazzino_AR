@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'GLTFLoader';
 import { ARButton } from 'ARButton';
-
+import { GaussianSplatLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
+import { ARButton } from 'three/examples/jsm/webxr/ARButton.js';
 let camera, scene, renderer;
 let reticle;
 let model;
@@ -47,18 +47,9 @@ function init() {
     scene.add(light);
 
     // GLTFモデルの読み込み
-    const loader = new GLTFLoader();
-    loader.load('./assets/roman.glb', (gltf) => {
-        model = gltf.scene;
-        model.visible = false; // 配置されるまで非表示
-        scene.add(model);
-        const box = new THREE.Box3().setFromObject(model);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-        const originalHeight = size.y;
-        const desiredHeight = 1; // メートル単位
-        const scaleRatio = desiredHeight / originalHeight;
-        model.scale.set(scaleRatio, scaleRatio, scaleRatio);
+    const loader = new GaussianSplatLoader();
+    loader.load('./assets/fazzino_compressed.ply', (model) => {
+        scene.add(model); // モデルをシーンに追加
     });
 
     // レティクルの作成

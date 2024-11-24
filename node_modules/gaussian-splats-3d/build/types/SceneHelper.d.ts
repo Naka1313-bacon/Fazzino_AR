@@ -1,0 +1,33 @@
+export class SceneHelper {
+    static buildDebugMaterial(color: any): any;
+    static buildFocusMarkerMaterial(color: any): any;
+    constructor(scene: any);
+    scene: any;
+    splatRenderTarget: any;
+    renderTargetCopyMaterial: any;
+    renderTargetCopyQuad: any;
+    renderTargetCopyCamera: any;
+    meshCursor: any;
+    focusMarker: any;
+    controlPlane: any;
+    updateSplatRenderTargetForRenderDimensions(width: any, height: any): void;
+    setupRenderTargetCopyObjects(): void;
+    setupMeshCursor(): void;
+    destroyMeshCursor(): void;
+    setMeshCursorVisibility(visible: any): void;
+    setMeshCursorPosition(position: any): void;
+    positionAndOrientMeshCursor(position: any, camera: any): void;
+    setupFocusMarker(): void;
+    updateFocusMarker: (position: any, camera: any, viewport: any) => void;
+    setFocusMarkerVisibility(visible: any): void;
+    setFocusMarkerOpacity(opacity: any): void;
+    getFocusMarkerOpacity(): any;
+    setupControlPlane(): void;
+    setControlPlaneVisibility(visible: any): void;
+    positionAndOrientControlPlane: (position: any, up: any) => void;
+    addDebugMeshes(): void;
+    debugRoot: any;
+    secondaryDebugRoot: any;
+    createDebugMeshes(renderOrder: any): any;
+    createSecondaryDebugMeshes(renderOrder: any): any;
+}
