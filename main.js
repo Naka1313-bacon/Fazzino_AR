@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { ARButton } from 'ARButton';
 import { GaussianSplatLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
-import { ARButton } from 'three/examples/jsm/webxr/ARButton.js';
 let camera, scene, renderer;
 let reticle;
 let model;
