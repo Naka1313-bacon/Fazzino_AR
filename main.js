@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import { ARButton } from 'ARButton';
-import { GaussianSplatLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
+import { PlyLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
+
+
 let camera, scene, renderer;
 let reticle;
-let model;
+let mesh;
 
 init();
+
 function init() {
     // シーンの作成
     scene = new THREE.Scene();
@@ -20,41 +23,42 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // ARボタンの追加
-    const arButton = ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] });
-    document.body.appendChild(arButton);
+    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
 
-    renderer.xr.addEventListener('sessionstart', () => {
-        const screenshotButton = document.getElementById('screenshotButton');
-        screenshotButton.style.display = 'block';
-    });
-
-    // ARセッションの終了時にスクリーンショットボタンを非表示
-    renderer.xr.addEventListener('sessionend', () => {
-        const screenshotButton = document.getElementById('screenshotButton');
-        screenshotButton.style.display = 'none';
-    });
-
-    // スクリーンショットボタンの動作
-    document.getElementById('screenshotButton').addEventListener('click', takeScreenshot);
-
-
-
-
-    // 環境光の追加
+    // ライトの追加
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
     light.position.set(0.5, 1, 0.25);
     scene.add(light);
 
-    // GLTFモデルの読み込み
-    const loader = new GaussianSplatLoader();
-    loader.load('./assets/fazzino_compressed.ply', (model) => {
-        scene.add(model); // モデルをシーンに追加
+    // Gaussian Splatting用のPLYファイルをロード
+    const loader = PlyLoader.loadFromURL(
+        './assets/fazziono.compressed.ply', // PLYファイルのパス
+        (progress) => {
+            console.log(`Progress: ${progress}%`);
+        },
+        false, // データを直接バッファに読み込むかどうか
+        null, // プログレッシブロードのセクションごとの進捗コールバック
+        0,    // 最小アルファ値
+        0     // 圧縮レベル
+    );
+
+    loader.then((splatData) => {
+        console.log('PLY Data loaded:', splatData);
+
+        // SplattingデータをThree.jsのメッシュとして変換
+        const geometry = splatData.geometry;
+        const material = new THREE.MeshStandardMaterial({ vertexColors: true });
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(0, 0, -2); // カメラの前方に配置
+        scene.add(mesh);
+    }).catch((error) => {
+        console.error('Failed to load PLY file:', error);
     });
 
     // レティクルの作成
-    const geometry = new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    reticle = new THREE.Mesh(geometry, material);
+    const reticleGeometry = new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2);
+    const reticleMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    reticle = new THREE.Mesh(reticleGeometry, reticleMaterial);
     reticle.matrixAutoUpdate = false;
     reticle.visible = false;
     scene.add(reticle);
@@ -86,11 +90,9 @@ function init() {
                 if (hitTestResults.length > 0) {
                     const hit = hitTestResults[0];
                     const pose = hit.getPose(referenceSpace);
-                    
+
                     reticle.visible = true;
                     reticle.matrix.fromArray(pose.transform.matrix);
-                   
-
                 } else {
                     reticle.visible = false;
                 }
@@ -102,37 +104,12 @@ function init() {
 
     // レティクルをタップしたときにモデルを配置
     window.addEventListener('click', () => {
-        if (reticle.visible && model) {
-            model.position.setFromMatrixPosition(reticle.matrix);
-            model.visible = true;
+        if (reticle.visible && mesh) {
+            mesh.position.setFromMatrixPosition(reticle.matrix);
+            mesh.visible = true;
         }
     });
+}
+
 
     
-}
-
-
-function takeScreenshot() {
-    const screenshotButton = document.getElementById('screenshotButton');
-
-    // ボタンを一時的に非表示
-    screenshotButton.style.display = 'none';
-
-    setTimeout(() => {
-        // 一時的に preserveDrawingBuffer を有効化
-        renderer.presreenshotButton.style.display = 'block';erveDrawingBuffer = true;
-
-        // 現在のシーンを画像として保存
-        const dataURL = renderer.domElement.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = dataURL;
-        link.download = 'screenshot.png';
-        link.click();
-
-        // preserveDrawingBuffer を無効化
-        renderer.preserveDrawingBuffer = false;
-
-        // ボタンを再表示
-        screenshotButton.style.display = 'block';
-    }, 100); // 短い遅延を入れることで非表示の適用を確実にする
-}
