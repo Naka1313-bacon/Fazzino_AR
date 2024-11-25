@@ -29,19 +29,6 @@ function init() {
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
     light.position.set(0.5, 1, 0.25);
     scene.add(light);
-    const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor', 'layers'] };
-    navigator.xr.requestSession('immersive-ar', sessionInit).then((session) => {
-        renderer.xr.setSession(session);
-    }).catch((error) => {
-        console.error('Failed to create XR session:', error);
-    });
-    const onSessionEnded = () => {
-        console.log('XR session ended.');
-        session.removeEventListener('end', onSessionEnded);
-    };
-    
-    session.addEventListener('end', onSessionEnded);
-    
 
     // Gaussian Splatting用のPLYファイルをロード
     const loader = PlyLoader.loadFromURL(
@@ -84,7 +71,12 @@ function init() {
         if (frame) {
             const referenceSpace = renderer.xr.getReferenceSpace();
             const session = renderer.xr.getSession();
-
+            const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor'] }; // 'layers'を削除
+            navigator.xr.requestSession('immersive-ar', sessionInit).then((session) => {
+                renderer.xr.setSession(session);
+            }).catch((error) => {
+                console.error('Failed to create XR session:', error);
+            });
             if (!hitTestSourceRequested) {
                 session.requestReferenceSpace('viewer').then((space) => {
                     session.requestHitTestSource({ space }).then((source) => {
