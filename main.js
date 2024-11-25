@@ -3,7 +3,6 @@ import { ARButton } from 'ARButton';
 import { PlyLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
 
 
-
 let camera, scene, renderer;
 let reticle;
 let mesh;
@@ -24,13 +23,25 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // ARボタンの追加
-    const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor'] }; // 'layers'を削除
-    document.body.appendChild(ARButton.createButton(renderer, { sessionInit }));
+    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
 
     // ライトの追加
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
     light.position.set(0.5, 1, 0.25);
     scene.add(light);
+    const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor', 'layers'] };
+    navigator.xr.requestSession('immersive-ar', sessionInit).then((session) => {
+        renderer.xr.setSession(session);
+    }).catch((error) => {
+        console.error('Failed to create XR session:', error);
+    });
+    const onSessionEnded = () => {
+        console.log('XR session ended.');
+        session.removeEventListener('end', onSessionEnded);
+    };
+    
+    session.addEventListener('end', onSessionEnded);
+    
 
     // Gaussian Splatting用のPLYファイルをロード
     const loader = PlyLoader.loadFromURL(
@@ -52,7 +63,6 @@ function init() {
         const material = new THREE.MeshStandardMaterial({ vertexColors: true });
         mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(0, 0, -2); // カメラの前方に配置
-        mesh.visible = false;
         scene.add(mesh);
     }).catch((error) => {
         console.error('Failed to load PLY file:', error);
@@ -80,10 +90,7 @@ function init() {
                     session.requestHitTestSource({ space }).then((source) => {
                         hitTestSource = source;
                     });
-                }).catch((error) => {
-                    console.error('Failed to request hit test source:', error);
                 });
-
                 session.addEventListener('end', () => {
                     hitTestSourceRequested = false;
                     hitTestSource = null;
@@ -115,18 +122,7 @@ function init() {
             mesh.visible = true;
         }
     });
-
-    // セッション終了時のエラーハンドリング
-    renderer.xr.addEventListener('sessionend', () => {
-        console.log('XR session ended.');
-        try {
-            renderer.setAnimationLoop(null); // アニメーションループを停止
-        } catch (error) {
-            console.error('Error stopping animation loop:', error);
-        }
-    });
 }
-
 
 
     
