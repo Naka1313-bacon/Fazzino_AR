@@ -3,6 +3,7 @@ import { ARButton } from 'ARButton';
 import { PlyLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
 
 
+
 let camera, scene, renderer;
 let reticle;
 let mesh;
@@ -23,7 +24,8 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // ARボタンの追加
-    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+    const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor'] }; // 'layers'を削除
+    document.body.appendChild(ARButton.createButton(renderer, { sessionInit }));
 
     // ライトの追加
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
@@ -78,7 +80,10 @@ function init() {
                     session.requestHitTestSource({ space }).then((source) => {
                         hitTestSource = source;
                     });
+                }).catch((error) => {
+                    console.error('Failed to request hit test source:', error);
                 });
+
                 session.addEventListener('end', () => {
                     hitTestSourceRequested = false;
                     hitTestSource = null;
@@ -110,7 +115,18 @@ function init() {
             mesh.visible = true;
         }
     });
+
+    // セッション終了時のエラーハンドリング
+    renderer.xr.addEventListener('sessionend', () => {
+        console.log('XR session ended.');
+        try {
+            renderer.setAnimationLoop(null); // アニメーションループを停止
+        } catch (error) {
+            console.error('Error stopping animation loop:', error);
+        }
+    });
 }
+
 
 
     
