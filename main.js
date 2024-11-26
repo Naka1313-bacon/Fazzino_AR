@@ -102,6 +102,12 @@ function init() {
                     reticle.visible = false;
                 }
             }
+            const onSessionEnded = () => {
+                console.log('XR session ended.');
+                session.removeEventListener('end', onSessionEnded);
+            };
+            
+            session.addEventListener('end', onSessionEnded);
         }
 
         renderer.render(scene, camera);
