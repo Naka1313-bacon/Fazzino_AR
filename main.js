@@ -102,6 +102,7 @@ function init() {
                     reticle.visible = false;
                 }
             }
+            
             const onSessionEnded = () => {
                 console.log('XR session ended.');
                 session.removeEventListener('end', onSessionEnded);
@@ -118,6 +119,7 @@ function init() {
         if (reticle.visible && mesh) {
             mesh.position.setFromMatrixPosition(reticle.matrix);
             mesh.visible = true;
+            console.log('clicked')
         }
     });
 }
