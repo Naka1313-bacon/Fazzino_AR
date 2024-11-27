@@ -71,7 +71,7 @@ function init() {
         if (frame) {
             const referenceSpace = renderer.xr.getReferenceSpace();
             const session = renderer.xr.getSession();
-            const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor'] }; // 'layers'を削除
+            const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor'] };
             navigator.xr.requestSession('immersive-ar', sessionInit).then((session) => {
                 renderer.xr.setSession(session);
             }).catch((error) => {
@@ -109,6 +109,7 @@ function init() {
             };
             
             session.addEventListener('end', onSessionEnded);
+            
         }
 
         renderer.render(scene, camera);
