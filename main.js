@@ -10,7 +10,7 @@ let mesh;
 
 init();
 
-function init() {
+async function init() {
     // シーンの作成
     scene = new THREE.Scene();
 
@@ -24,7 +24,27 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // ARボタンの追加
-    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'], optionalFeatures: ['local-floor', 'bounded-floor']}));
+    const sessionInit = { requiredFeatures: ['hit-test'], optionalFeatures: ['local-floor', 'bounded-floor'] };
+    document.body.appendChild(ARButton.createButton(renderer, sessionInit));
+
+    // セッションの設定
+    renderer.xr.addEventListener('sessionstart', async () => {
+        const session = renderer.xr.getSession();
+        const gl = renderer.getContext();
+        let baseLayer;
+
+        // `layers`のサポートを確認し、適切に設定
+        if (session.updateRenderState && session.renderState.layers === undefined) {
+            baseLayer = new XRWebGLLayer(session, gl);
+            session.updateRenderState({ baseLayer });
+        } else if (session.renderState.layers) {
+            const xrGlBinding = new XRWebGLBinding(session, gl);
+            const projectionLayer = xrGlBinding.createProjectionLayer();
+            session.updateRenderState({
+                layers: [projectionLayer]
+            });
+        }
+    });
 
     // ライトの追加
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
