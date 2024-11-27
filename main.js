@@ -71,7 +71,7 @@ async function init() {
         const material = new THREE.MeshStandardMaterial({ vertexColors: true });
         mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(0, 0, -2); // カメラの前方に配置
-        mesh.visible = false;
+        mesh.visible = true;
         scene.add(mesh);
     }).catch((error) => {
         console.error('Failed to load PLY file:', error);
