@@ -3,6 +3,7 @@ import { ARButton } from 'ARButton';
 import { PlyLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
 
 
+
 let camera, scene, renderer;
 let reticle;
 let mesh;
@@ -23,7 +24,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // ARボタンの追加
-    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'], optionalFeatures: ['local-floor', 'bounded-floor']}));
 
     // ライトの追加
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
@@ -50,6 +51,7 @@ function init() {
         const material = new THREE.MeshStandardMaterial({ vertexColors: true });
         mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(0, 0, -2); // カメラの前方に配置
+        mesh.visible = false;
         scene.add(mesh);
     }).catch((error) => {
         console.error('Failed to load PLY file:', error);
@@ -71,18 +73,16 @@ function init() {
         if (frame) {
             const referenceSpace = renderer.xr.getReferenceSpace();
             const session = renderer.xr.getSession();
-            const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor'] };
-            navigator.xr.requestSession('immersive-ar', sessionInit).then((session) => {
-                renderer.xr.setSession(session);
-            }).catch((error) => {
-                console.error('Failed to create XR session:', error);
-            });
+
             if (!hitTestSourceRequested) {
                 session.requestReferenceSpace('viewer').then((space) => {
                     session.requestHitTestSource({ space }).then((source) => {
                         hitTestSource = source;
                     });
+                }).catch((error) => {
+                    console.error('Failed to request hit test source:', error);
                 });
+
                 session.addEventListener('end', () => {
                     hitTestSourceRequested = false;
                     hitTestSource = null;
@@ -102,14 +102,6 @@ function init() {
                     reticle.visible = false;
                 }
             }
-            
-            const onSessionEnded = () => {
-                console.log('XR session ended.');
-                session.removeEventListener('end', onSessionEnded);
-            };
-            
-            session.addEventListener('end', onSessionEnded);
-            
         }
 
         renderer.render(scene, camera);
@@ -120,7 +112,7 @@ function init() {
         if (reticle.visible && mesh) {
             mesh.position.setFromMatrixPosition(reticle.matrix);
             mesh.visible = true;
-            console.log('clicked')
+            console.log('Model placed at:', mesh.position);
         }
     });
 }
