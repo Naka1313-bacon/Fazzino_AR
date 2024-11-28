@@ -1,6 +1,4 @@
-// import * as THREE from 'three';
-// import { ARButton } from 'ARButton';
-// import { PlyLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
+
 
 
 
