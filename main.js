@@ -21,8 +21,8 @@ document.body.appendChild(ARButton.createButton(renderer, {
     domOverlay: { root: document.body }
   }));
 
-const loader = new GaussianSplatLoader();
-loader.load('./assets/fazzino3D.compressed', (splat) => {
+const loader = new PlyLoader();
+loader.load('./assets/fazzino3D.compressed.ply', (splat) => {
   scene.add(splat);
 }, undefined, (error) => {
   console.error('モデルの読み込みに失敗しました:', error);
