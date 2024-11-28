@@ -53,7 +53,7 @@ async function init() {
 
     // Gaussian Splatting用のPLYファイルをロード
     const loader = PlyLoader.loadFromURL(
-        './assets/fazziono.compressed.ply', // PLYファイルのパス
+        './assets/fazzino.compressed.ply', // PLYファイルのパス
         (progress) => {
             console.log(`Progress: ${progress}%`);
         },
