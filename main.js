@@ -49,7 +49,6 @@ function init() {
         const geometry = splatData.geometry;
         const material = new THREE.MeshStandardMaterial({ vertexColors: true });
         mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(0, 0, -2); // カメラの前方に配置
         scene.add(mesh);
     }).catch((error) => {
         console.error('Failed to load PLY file:', error);
@@ -71,12 +70,7 @@ function init() {
         if (frame) {
             const referenceSpace = renderer.xr.getReferenceSpace();
             const session = renderer.xr.getSession();
-            const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor'] }; // 'layers'を削除
-            navigator.xr.requestSession('immersive-ar', sessionInit).then((session) => {
-                renderer.xr.setSession(session);
-            }).catch((error) => {
-                console.error('Failed to create XR session:', error);
-            });
+
             if (!hitTestSourceRequested) {
                 session.requestReferenceSpace('viewer').then((space) => {
                     session.requestHitTestSource({ space }).then((source) => {
@@ -103,12 +97,7 @@ function init() {
                 }
             }
             
-            const onSessionEnded = () => {
-                console.log('XR session ended.');
-                session.removeEventListener('end', onSessionEnded);
-            };
             
-            session.addEventListener('end', onSessionEnded);
         }
 
         renderer.render(scene, camera);
@@ -119,7 +108,7 @@ function init() {
         if (reticle.visible && mesh) {
             mesh.position.setFromMatrixPosition(reticle.matrix);
             mesh.visible = true;
-            console.log('clicked')
+            console.log('Model placed at:', mesh.position);
         }
     });
 }
