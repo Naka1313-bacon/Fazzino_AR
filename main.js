@@ -85,20 +85,24 @@ async function init() {
 
         renderer.render(scene, camera);
     });
+    let isSceneLoading = false;
 
-    // レティクルをタップしたときにモデルを配置
-    window.addEventListener('click', () => {
-        if (reticle.visible) {
-            viewer.addSplatScene(modelPath, {
-                'position': new THREE.Vector3().setFromMatrixPosition(reticle.matrix).toArray(),
-                'scale': [0.25, 0.25, 0.25],
-                'rotation': new THREE.Quaternion().setFromRotationMatrix(reticle.matrix).toArray()
-            }).then(() => {
+    window.addEventListener('click', async () => {
+        if (reticle.visible && !isSceneLoading) {
+            isSceneLoading = true;
+            try {
+                await viewer.addSplatScene(modelPath, {
+                    'position': new THREE.Vector3().setFromMatrixPosition(reticle.matrix).toArray(),
+                    'scale': [0.25, 0.25, 0.25],
+                    'rotation': new THREE.Quaternion().setFromRotationMatrix(reticle.matrix).toArray()
+                });
                 viewer.start();
                 console.log('Gaussian Splats model placed.');
-            }).catch((error) => {
+            } catch (error) {
                 console.error('Failed to place Gaussian Splats model:', error);
-            });
+            } finally {
+                isSceneLoading = false; // ロード完了後にフラグをリセット
+            }
         }
     });
 }
