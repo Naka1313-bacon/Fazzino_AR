@@ -29,8 +29,7 @@ async function init() {
     // Gaussian Splats 3D Viewer の初期化
     viewer = new GaussianSplats3D.Viewer({
         'initialCameraLookAt': [0, 0, -1],
-        'webXRMode': GaussianSplats3D.WebXRMode.AR,
-        'useSharedArrayBuffer': false
+        'webXRMode': GaussianSplats3D.WebXRMode.AR
     });
 
     // Gaussian Splats モデルのロード
@@ -93,7 +92,7 @@ async function init() {
             try {
                 await viewer.addSplatScene(modelPath, {
                     'position': new THREE.Vector3().setFromMatrixPosition(reticle.matrix).toArray(),
-                    'scale': [0.25, 0.25, 0.25],
+                    'scale': [1, 1, 1],
                     'rotation': new THREE.Quaternion().setFromRotationMatrix(reticle.matrix).toArray()
                 });
                 viewer.start();
