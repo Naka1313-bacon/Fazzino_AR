@@ -119,6 +119,7 @@ async function init() {
             mesh.position.setFromMatrixPosition(reticle.matrix);
             mesh.visible = true;
             console.log('Model placed at:', mesh.position);
+            console.log('Rectical placed at:', reticle.position);
         }
     });
 }
