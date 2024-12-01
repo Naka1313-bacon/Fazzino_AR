@@ -1,12 +1,11 @@
 import * as THREE from 'three';
 import { ARButton } from 'ARButton';
-import { PlyLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
-
+import * as GaussianSplats3D from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
 
 
 let camera, scene, renderer;
 let reticle;
-let mesh;
+let viewer;
 
 init();
 
@@ -27,40 +26,14 @@ async function init() {
     const sessionInit = { requiredFeatures: ['hit-test'], optionalFeatures: ['local-floor', 'bounded-floor'] };
     document.body.appendChild(ARButton.createButton(renderer, sessionInit));
 
-
-
-    // ライトの追加
-    const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-    light.position.set(0.5, 1, 0.25);
-    scene.add(light);
-
-    // Gaussian Splatting用のPLYファイルをロード
-    const loader = PlyLoader.loadFromURL(
-
-        './assets/fazzino3D.compressed.ply', // PLYファイルのパス
-        (progress) => {
-            console.log(`Progress: ${progress}%`);
-        },
-        false, // データを直接バッファに読み込むかどうか
-        null, // プログレッシブロードのセクションごとの進捗コールバック
-        0,    // 最小アルファ値
-        0     // 圧縮レベル
-    );
-
-    loader.then((splatData) => {
-        console.log('PLY Data loaded:', splatData);
-
-        // SplattingデータをThree.jsのメッシュとして変換
-        const geometry = splatData.geometry;
-        const material = new THREE.MeshStandardMaterial({ vertexColors: true });
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.scale.set(1, 1, 1);
-        mesh.visible = false;
-
-        scene.add(mesh);
-    }).catch((error) => {
-        console.error('Failed to load PLY file:', error);
+    // Gaussian Splats 3D Viewer の初期化
+    viewer = new GaussianSplats3D.Viewer({
+        'initialCameraLookAt': [0, 0, -1],
+        'webXRMode': GaussianSplats3D.WebXRMode.AR
     });
+
+    // Gaussian Splats モデルのロード
+    const modelPath = 'assets/data/bonsai/bonsai_high.ksplat';
 
     // レティクルの作成
     const reticleGeometry = new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2);
@@ -107,7 +80,6 @@ async function init() {
                     reticle.visible = false;
                 }
             }
-
         }
 
         renderer.render(scene, camera);
@@ -115,12 +87,17 @@ async function init() {
 
     // レティクルをタップしたときにモデルを配置
     window.addEventListener('click', () => {
-        if (reticle.visible && mesh) {
-            mesh.position(reticle.position);
-            mesh.visible = true;
-            console.log('Model placed at:', mesh.position);
-            console.log('Rectical placed at:', reticle.position);
+        if (reticle.visible) {
+            viewer.addSplatScene(modelPath, {
+                'position': new THREE.Vector3().setFromMatrixPosition(reticle.matrix).toArray(),
+                'scale': [0.25, 0.25, 0.25],
+                'rotation': new THREE.Quaternion().setFromRotationMatrix(reticle.matrix).toArray()
+            }).then(() => {
+                viewer.start();
+                console.log('Gaussian Splats model placed.');
+            }).catch((error) => {
+                console.error('Failed to place Gaussian Splats model:', error);
+            });
         }
     });
 }
-
