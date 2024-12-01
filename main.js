@@ -3,13 +3,14 @@ import { ARButton } from 'ARButton';
 import { PlyLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
 
 
+
 let camera, scene, renderer;
 let reticle;
 let mesh;
 
 init();
 
-function init() {
+async function init() {
     // シーンの作成
     scene = new THREE.Scene();
 
@@ -23,7 +24,27 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // ARボタンの追加
-    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+    const sessionInit = { requiredFeatures: ['hit-test'], optionalFeatures: ['local-floor', 'bounded-floor'] };
+    document.body.appendChild(ARButton.createButton(renderer, sessionInit));
+
+    // セッションの設定
+    renderer.xr.addEventListener('sessionstart', async () => {
+        const session = renderer.xr.getSession();
+        const gl = renderer.getContext();
+        let baseLayer;
+
+        // `layers`のサポートを確認し、適切に設定
+        if (session.updateRenderState && session.renderState.layers === undefined) {
+            baseLayer = new XRWebGLLayer(session, gl);
+            session.updateRenderState({ baseLayer });
+        } else if (session.renderState.layers) {
+            const xrGlBinding = new XRWebGLBinding(session, gl);
+            const projectionLayer = xrGlBinding.createProjectionLayer();
+            session.updateRenderState({
+                layers: [projectionLayer]
+            });
+        }
+    });
 
     // ライトの追加
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
@@ -32,6 +53,7 @@ function init() {
 
     // Gaussian Splatting用のPLYファイルをロード
     const loader = PlyLoader.loadFromURL(
+
         './assets/fazzino3D.compressed.ply', // PLYファイルのパス
         (progress) => {
             console.log(`Progress: ${progress}%`);
@@ -49,6 +71,9 @@ function init() {
         const geometry = splatData.geometry;
         const material = new THREE.MeshStandardMaterial({ vertexColors: true });
         mesh = new THREE.Mesh(geometry, material);
+
+        mesh.visible = false;
+
         scene.add(mesh);
     }).catch((error) => {
         console.error('Failed to load PLY file:', error);
@@ -76,7 +101,10 @@ function init() {
                     session.requestHitTestSource({ space }).then((source) => {
                         hitTestSource = source;
                     });
+                }).catch((error) => {
+                    console.error('Failed to request hit test source:', error);
                 });
+
                 session.addEventListener('end', () => {
                     hitTestSourceRequested = false;
                     hitTestSource = null;
@@ -96,8 +124,7 @@ function init() {
                     reticle.visible = false;
                 }
             }
-            
-            
+
         }
 
         renderer.render(scene, camera);
@@ -113,5 +140,3 @@ function init() {
     });
 }
 
-
-    
