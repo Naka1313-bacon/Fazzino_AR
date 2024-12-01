@@ -33,7 +33,7 @@ async function init() {
     });
 
     // Gaussian Splats モデルのロード
-    const modelPath = 'assets/data/bonsai/bonsai_high.ksplat';
+    const modelPath = './assets/fazzino3D.compressed.ply';
 
     // レティクルの作成
     const reticleGeometry = new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2);
