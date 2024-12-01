@@ -116,7 +116,7 @@ async function init() {
     // レティクルをタップしたときにモデルを配置
     window.addEventListener('click', () => {
         if (reticle.visible && mesh) {
-            mesh.position.setFromMatrixPosition(reticle.matrix);
+            mesh.position(reticle.position);
             mesh.visible = true;
             console.log('Model placed at:', mesh.position);
             console.log('Rectical placed at:', reticle.position);
