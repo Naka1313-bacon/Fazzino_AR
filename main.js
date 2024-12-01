@@ -54,7 +54,7 @@ async function init() {
         const geometry = splatData.geometry;
         const material = new THREE.MeshStandardMaterial({ vertexColors: true });
         mesh = new THREE.Mesh(geometry, material);
-
+        mesh.scale.set(1, 1, 1);
         mesh.visible = false;
 
         scene.add(mesh);
