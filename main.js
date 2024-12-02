@@ -102,6 +102,9 @@ async function init() {
                 console.log('Starting viewer...');
                 viewer.start();
                 console.log('Viewer started.');
+                console.log('Reticle position:', reticle.position);
+              console.log('Model position:', viewer.getScene().getBoundingSphere());
+
             } catch (error) {
                 console.error('Failed to place Gaussian Splats model:', error);
             } finally {
