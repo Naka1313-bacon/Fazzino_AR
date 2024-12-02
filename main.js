@@ -23,7 +23,9 @@ async function init() {
     document.body.appendChild(renderer.domElement);
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(0, 10, 10);
-    scene.add(light);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // 環境光を追加
+
+    scene.add(light,ambientLight);
     // ARボタンの追加
     const sessionInit = { requiredFeatures: ['hit-test'], optionalFeatures: ['local-floor', 'bounded-floor'] };
     document.body.appendChild(ARButton.createButton(renderer, sessionInit));
@@ -97,8 +99,9 @@ async function init() {
                     'scale': [1, 1, 1],
                     'rotation': new THREE.Quaternion().setFromRotationMatrix(reticle.matrix).toArray()
                 });
+                console.log('Starting viewer...');
                 viewer.start();
-                console.log('Gaussian Splats model placed.');
+                console.log('Viewer started.');
             } catch (error) {
                 console.error('Failed to place Gaussian Splats model:', error);
             } finally {
