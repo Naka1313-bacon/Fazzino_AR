@@ -99,7 +99,7 @@ async function init() {
 
             try {
                 await viewer.addSplatScene(modelPath, {
-                    'position': [0, 0, -2], // カメラ前方2メートルに配置
+                    'position': [0, 0, 0], // カメラ前方2メートルに配置
                     'scale': [3, 3, 3],
                     'rotation': [0, 0, 0, 1]
                 }).then(() => {
