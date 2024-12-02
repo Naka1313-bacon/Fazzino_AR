@@ -103,7 +103,7 @@ async function init() {
                 viewer.start();
                 console.log('Viewer started.');
                 console.log('Reticle position:', reticle.position);
-              console.log('Model position:', viewer.getScene().getBoundingSphere());
+                console.log('Model position:', new THREE.Vector3().setFromMatrixPosition(reticle.matrix).toArray());
 
             } catch (error) {
                 console.error('Failed to place Gaussian Splats model:', error);
