@@ -37,7 +37,7 @@ async function init() {
     });
 
     // Gaussian Splats モデルのロード
-    const modelPath = './assets/fazzino3D.compressed.ply';
+    const modelPath = './assets/fazzino3D.compressed.splat';
 
     // レティクルの作成
     const reticleGeometry = new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2);
@@ -113,7 +113,7 @@ async function init() {
                 console.log('Viewer started.');
                 console.log('Reticle position:', reticle.position);
                 console.log('Reticle world position:', reticle.getWorldPosition(new THREE.Vector3()));
-                console.log('Model position:', [position.x, position.y, position.z]);
+               
             } catch (error) {
                 console.error('Failed to place Gaussian Splats model:', error);
             } finally {
