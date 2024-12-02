@@ -99,10 +99,15 @@ async function init() {
 
             try {
                 await viewer.addSplatScene(modelPath, {
-                    'position': [position.x, position.y, position.z],
-                    'scale': [1, 1, 1],
+                    'position': [0, 0, -2], // カメラ前方2メートルに配置
+                    'scale': [3, 3, 3],
                     'rotation': [0, 0, 0, 1]
+                }).then(() => {
+                    console.log('Model successfully loaded.');
+                }).catch(error => {
+                    console.error('Error loading model:', error);
                 });
+                
                 console.log('Starting viewer...');
                 viewer.start();
                 console.log('Viewer started.');
