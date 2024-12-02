@@ -93,18 +93,22 @@ async function init() {
     window.addEventListener('click', async () => {
         if (reticle.visible && !isSceneLoading) {
             isSceneLoading = true;
+            const position = new THREE.Vector3();
+            reticle.getWorldPosition(position);
+            console.log('Reticle position:', position);
+
             try {
                 await viewer.addSplatScene(modelPath, {
-                    'position': new THREE.Vector3().setFromMatrixPosition(reticle.matrix).toArray(),
+                    'position': [position.x, position.y, position.z],
                     'scale': [1, 1, 1],
-                    'rotation': new THREE.Quaternion().setFromRotationMatrix(reticle.matrix).toArray()
+                    'rotation': [0, 0, 0, 1]
                 });
                 console.log('Starting viewer...');
                 viewer.start();
                 console.log('Viewer started.');
                 console.log('Reticle position:', reticle.position);
-                console.log('Model position:', new THREE.Vector3().setFromMatrixPosition(reticle.matrix).toArray());
-
+                console.log('Reticle world position:', reticle.getWorldPosition(new THREE.Vector3()));
+                console.log('Model position:', [position.x, position.y, position.z]);
             } catch (error) {
                 console.error('Failed to place Gaussian Splats model:', error);
             } finally {
