@@ -32,7 +32,7 @@ async function init() {
         const session = renderer.xr.getSession();
         const gl = renderer.getContext();
         let baseLayer;
-
+    
         // `layers`のサポートを確認し、適切に設定
         if (session.updateRenderState && session.renderState.layers === undefined) {
             baseLayer = new XRWebGLLayer(session, gl);
@@ -44,7 +44,11 @@ async function init() {
                 layers: [projectionLayer]
             });
         }
+    
+        // アニメーションフレームコールバックの設定
+        session.requestAnimationFrame(onXRFrame);
     });
+    
 
     // ライトの追加
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
@@ -88,43 +92,29 @@ async function init() {
     let hitTestSource = null;
     let hitTestSourceRequested = false;
 
-    renderer.setAnimationLoop((timestamp, frame) => {
-        if (frame) {
-            const referenceSpace = renderer.xr.getReferenceSpace();
-            const session = renderer.xr.getSession();
+    function onXRFrame(time, frame) {
+        const session = frame.session;
+        session.requestAnimationFrame(onXRFrame);
 
-            if (!hitTestSourceRequested) {
-                session.requestReferenceSpace('viewer').then((space) => {
-                    session.requestHitTestSource({ space }).then((source) => {
-                        hitTestSource = source;
-                    });
-                }).catch((error) => {
-                    console.error('Failed to request hit test source:', error);
-                });
+        const referenceSpace = renderer.xr.getReferenceSpace();
 
-                session.addEventListener('end', () => {
-                    hitTestSourceRequested = false;
-                    hitTestSource = null;
-                });
-                hitTestSourceRequested = true;
-            }
+        // ヒットテストやその他のフレームごとの処理
+        if (hitTestSource) {
+            const hitTestResults = frame.getHitTestResults(hitTestSource);
+            if (hitTestResults.length > 0) {
+                const hit = hitTestResults[0];
+                const pose = hit.getPose(referenceSpace);
 
-            if (hitTestSource) {
-                const hitTestResults = frame.getHitTestResults(hitTestSource);
-                if (hitTestResults.length > 0) {
-                    const hit = hitTestResults[0];
-                    const pose = hit.getPose(referenceSpace);
-
-                    reticle.visible = true;
-                    reticle.matrix.fromArray(pose.transform.matrix);
-                } else {
-                    reticle.visible = false;
-                }
+                reticle.visible = true;
+                reticle.matrix.fromArray(pose.transform.matrix);
+            } else {
+                reticle.visible = false;
             }
         }
 
+        // シーンのレンダリング
         renderer.render(scene, camera);
-    });
+    }
 
     // レティクルをタップしたときにモデルを配置
     window.addEventListener('click', () => {
