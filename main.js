@@ -1,5 +1,5 @@
+import * as THREE from 'three';
 import * as SPLAT from "gsplat";
-import * as THREE from "three";
 
 const scale = 1
 const movement_scale = 5
@@ -15,10 +15,7 @@ const camera = new SPLAT.Camera(
     0.03,
     100
 )
-const renderer = new SPLAT.WebGLRenderer();
-// remove background color from renderer
-renderer.domElement.style.background = "unset";
-renderer.setSize(window.innerWidth, window.innerHeight);
+
 
 async function convertPLYToSPLAT(url) {
     // Load PLY file into scene
@@ -73,7 +70,11 @@ function AR(){
   function onSessionStarted( session ) {
       session.addEventListener( 'end', onSessionEnded );
       trenderer.xr.setSession( session );
-      button.style.display = 'none';
+      if (button) {
+        button.style.display = 'none';
+    } else {
+        console.error("Button is not defined or could not be created.");
+    }
       button.textContent = 'EXIT AR';
       currentSession = session;
       session.requestReferenceSpace('local').then((refSpace) => {
@@ -136,7 +137,7 @@ async function main() {
     // await SPLAT.Loader.LoadAsync(url, scene, () => {});
 
     // dreamgaussian example
-    const url = "./assets/fazzino3D.compressed.splat";
+    const url = "./assets/fazzino3D.compressed.ply";
     const data = await convertPLYToSPLAT(url);
 
     const frame = () => {
@@ -154,12 +155,21 @@ function onWindowResize() {
   }
 window.addEventListener("resize", onWindowResize);
 
-var button = document.createElement( 'button' );
-button.id = 'ArButton'
-button.textContent = 'ENTER AR' ;
-button.style.cssText+= `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
-    
-document.body.appendChild(button)
-button.addEventListener('click',x=>AR())
+document.addEventListener('DOMContentLoaded', () => {
+    // ボタンの生成
+    var button = document.createElement('button');
+    button.id = 'ArButton';
+    button.textContent = 'ENTER AR';
+    button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
+    document.body.appendChild(button);
+
+    // ボタンクリックでARを開始
+    button.addEventListener('click', x => AR());
+
+    // レンダラーの初期化
+    const renderer = new SPLAT.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.style.background = "unset";
+});
 
 main();
