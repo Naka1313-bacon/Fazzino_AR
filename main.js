@@ -23,8 +23,8 @@ async function convertPLYToSPLAT(url) {
         console.log("Loading ply file: " + progress);
     });
     scene.rotation = new SPLAT.Quaternion(-1, 0, 0, 0)
-    scene.scale(new SPLAT.Vector3(12*scale, 12*scale, 12*scale))
-    // Scene.data is in SPLAT format
+    console.log(scene);
+
     return scene.data;
 }
 
