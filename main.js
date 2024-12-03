@@ -16,6 +16,13 @@ const camera = new SPLAT.Camera(
     100
 )
 var button = document.createElement('button');
+button.id = 'ArButton';
+button.textContent = 'ENTER AR';
+button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
+document.body.appendChild(button);
+
+// ボタンクリックでARを開始
+button.addEventListener('click', x => AR());
 const renderer = new SPLAT.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -159,18 +166,6 @@ function onWindowResize() {
   }
 window.addEventListener("resize", onWindowResize);
 
-document.addEventListener('DOMContentLoaded', () => {
-    // ボタンの生成
-    
-    button.id = 'ArButton';
-    button.textContent = 'ENTER AR';
-    button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
-    document.body.appendChild(button);
 
-    // ボタンクリックでARを開始
-    button.addEventListener('click', x => AR());
-    
-
-});
 
 main();
