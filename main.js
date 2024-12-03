@@ -37,7 +37,7 @@ async function init() {
     });
 
     // Gaussian Splats モデルのロード
-    const modelPath = './assets/fazzino3D.compressed.ply';
+    const modelPath = './assets/fazzino3D.compressed.splat';
 
     // レティクルの作成
     const reticleGeometry = new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2);
