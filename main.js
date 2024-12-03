@@ -113,7 +113,8 @@ async function init() {
                 console.log('Viewer started.');
                 console.log('Reticle position:', reticle.position);
                 console.log('Reticle world position:', reticle.getWorldPosition(new THREE.Vector3()));
-               
+                console.log('Camera position:', camera.position);
+                console.log('Camera rotation:', camera.rotation);
             } catch (error) {
                 console.error('Failed to place Gaussian Splats model:', error);
             } finally {
