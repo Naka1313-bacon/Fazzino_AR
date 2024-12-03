@@ -16,7 +16,11 @@ const camera = new SPLAT.Camera(
     100
 )
 
-
+var button = document.createElement('button');
+button.id = 'ArButton';
+button.textContent = 'ENTER AR';
+button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
+document.body.appendChild(button);
 
 async function convertPLYToSPLAT(url) {
     // Load PLY file into scene
@@ -57,17 +61,13 @@ function getXRSessionInit(mode, options) {
  }
 
 function init(){
-    var button = document.createElement('button');
-    button.id = 'ArButton';
-    button.textContent = 'ENTER AR';
-    button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
-    document.body.appendChild(button);
+
     const renderer = new SPLAT.WebGLRenderer();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.domElement.style.background = "unset";
     // ボタンクリックでARを開始
-    button.addEventListener('click', x => AR());
+    
     tscene = new THREE.Scene();
     tcamera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.01, 50 );
     trenderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -167,6 +167,6 @@ function onWindowResize() {
   }
 window.addEventListener("resize", onWindowResize);
 
-
+button.addEventListener('click', x => AR());
 
 main();
