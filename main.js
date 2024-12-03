@@ -15,14 +15,7 @@ const camera = new SPLAT.Camera(
     0.03,
     100
 )
-var button = document.createElement('button');
-button.id = 'ArButton';
-button.textContent = 'ENTER AR';
-button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
-document.body.appendChild(button);
 
-// ボタンクリックでARを開始
-button.addEventListener('click', x => AR());
 const renderer = new SPLAT.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -67,6 +60,14 @@ function getXRSessionInit(mode, options) {
  }
 
 function init(){
+    var button = document.createElement('button');
+    button.id = 'ArButton';
+    button.textContent = 'ENTER AR';
+    button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
+    document.body.appendChild(button);
+    
+    // ボタンクリックでARを開始
+    button.addEventListener('click', x => AR());
     tscene = new THREE.Scene();
     tcamera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.01, 50 );
     trenderer = new THREE.WebGLRenderer( { antialias: true } );
