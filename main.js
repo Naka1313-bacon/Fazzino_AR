@@ -15,8 +15,12 @@ const camera = new SPLAT.Camera(
     0.03,
     100
 )
-const renderer = new SPLAT.WebGLRenderer();
 var button = document.createElement('button');
+const renderer = new SPLAT.WebGLRenderer();
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.domElement.style.background = "unset";
+
 async function convertPLYToSPLAT(url) {
     // Load PLY file into scene
     await SPLAT.PLYLoader.LoadAsync(url, scene, (progress) => {
@@ -165,11 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ボタンクリックでARを開始
     button.addEventListener('click', x => AR());
-
-    // レンダラーの初期化
     
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.domElement.style.background = "unset";
+
 });
 
 main();
