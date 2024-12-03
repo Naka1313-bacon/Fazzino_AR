@@ -16,10 +16,7 @@ const camera = new SPLAT.Camera(
     100
 )
 
-const renderer = new SPLAT.WebGLRenderer();
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.domElement.style.background = "unset";
 
 async function convertPLYToSPLAT(url) {
     // Load PLY file into scene
@@ -65,7 +62,10 @@ function init(){
     button.textContent = 'ENTER AR';
     button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
     document.body.appendChild(button);
-    
+    const renderer = new SPLAT.WebGLRenderer();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.style.background = "unset";
     // ボタンクリックでARを開始
     button.addEventListener('click', x => AR());
     tscene = new THREE.Scene();
