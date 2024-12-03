@@ -1,12 +1,11 @@
 import * as THREE from 'three';
 import { ARButton } from 'ARButton';
-import { PlyLoader } from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
-
+import * as GaussianSplats3D from 'gaussian-splats-3d'; // 利用するライブラリを読み込む
 
 
 let camera, scene, renderer;
 let reticle;
-let mesh;
+let viewer;
 
 init();
 
@@ -22,63 +21,23 @@ async function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.xr.enabled = true;
     document.body.appendChild(renderer.domElement);
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(0, 10, 10);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // 環境光を追加
 
+    scene.add(light,ambientLight);
     // ARボタンの追加
     const sessionInit = { requiredFeatures: ['hit-test'], optionalFeatures: ['local-floor', 'bounded-floor'] };
     document.body.appendChild(ARButton.createButton(renderer, sessionInit));
 
-    // セッションの設定
-    renderer.xr.addEventListener('sessionstart', async () => {
-        const session = renderer.xr.getSession();
-        const gl = renderer.getContext();
-        let baseLayer;
-    
-        // `layers`のサポートを確認し、適切に設定
-        if (session.updateRenderState && session.renderState.layers === undefined) {
-            baseLayer = new XRWebGLLayer(session, gl);
-            session.updateRenderState({ baseLayer });
-        } else if (session.renderState.layers) {
-            const xrGlBinding = new XRWebGLBinding(session, gl);
-            const projectionLayer = xrGlBinding.createProjectionLayer();
-            session.updateRenderState({
-                layers: [projectionLayer]
-            });
-        }
-    
-        // アニメーションフレームコールバックの設定
-        session.requestAnimationFrame(onXRFrame);
+    // Gaussian Splats 3D Viewer の初期化
+    viewer = new GaussianSplats3D.Viewer({
+        
+        'webXRMode': GaussianSplats3D.WebXRMode.AR
     });
-    
 
-    // ライトの追加
-    const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-    light.position.set(0.5, 1, 0.25);
-    scene.add(light);
-
-    // Gaussian Splatting用のPLYファイルをロード
-    const loader = PlyLoader.loadFromURL(
-        './assets/fazzino3D.compressed.ply', // PLYファイルのパス
-        (progress) => {
-            console.log(`Progress: ${progress}%`);
-        },
-        false, // データを直接バッファに読み込むかどうか
-        null, // プログレッシブロードのセクションごとの進捗コールバック
-        0,    // 最小アルファ値
-        0     // 圧縮レベル
-    );
-
-    loader.then((splatData) => {
-        console.log('PLY Data loaded:', splatData);
-
-        // SplattingデータをThree.jsのメッシュとして変換
-        const geometry = splatData.geometry;
-        const material = new THREE.MeshStandardMaterial({ vertexColors: true });
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.visible = false;
-        scene.add(mesh);
-    }).catch((error) => {
-        console.error('Failed to load PLY file:', error);
-    });
+    // Gaussian Splats モデルのロード
+    const modelPath = './assets/fazzino3D.compressed.ply';
 
     // レティクルの作成
     const reticleGeometry = new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2);
@@ -92,37 +51,74 @@ async function init() {
     let hitTestSource = null;
     let hitTestSourceRequested = false;
 
-    function onXRFrame(time, frame) {
-        const session = frame.session;
-        session.requestAnimationFrame(onXRFrame);
+    renderer.setAnimationLoop((timestamp, frame) => {
+        if (frame) {
+            const referenceSpace = renderer.xr.getReferenceSpace();
+            const session = renderer.xr.getSession();
 
-        const referenceSpace = renderer.xr.getReferenceSpace();
+            if (!hitTestSourceRequested) {
+                session.requestReferenceSpace('viewer').then((space) => {
+                    session.requestHitTestSource({ space }).then((source) => {
+                        hitTestSource = source;
+                    });
+                }).catch((error) => {
+                    console.error('Failed to request hit test source:', error);
+                });
 
-        // ヒットテストやその他のフレームごとの処理
-        if (hitTestSource) {
-            const hitTestResults = frame.getHitTestResults(hitTestSource);
-            if (hitTestResults.length > 0) {
-                const hit = hitTestResults[0];
-                const pose = hit.getPose(referenceSpace);
+                session.addEventListener('end', () => {
+                    hitTestSourceRequested = false;
+                    hitTestSource = null;
+                });
+                hitTestSourceRequested = true;
+            }
 
-                reticle.visible = true;
-                reticle.matrix.fromArray(pose.transform.matrix);
-            } else {
-                reticle.visible = false;
+            if (hitTestSource) {
+                const hitTestResults = frame.getHitTestResults(hitTestSource);
+                if (hitTestResults.length > 0) {
+                    const hit = hitTestResults[0];
+                    const pose = hit.getPose(referenceSpace);
+
+                    reticle.visible = true;
+                    reticle.matrix.fromArray(pose.transform.matrix);
+                } else {
+                    reticle.visible = false;
+                }
             }
         }
 
-        // シーンのレンダリング
         renderer.render(scene, camera);
-    }
-  
-    // レティクルをタップしたときにモデルを配置
-    window.addEventListener('click', () => {
-        if (reticle.visible && mesh) {
-            mesh.position.setFromMatrixPosition(reticle.matrix);
-            mesh.visible = true;
-            console.log('Model placed at:', mesh.position);
+    });
+    let isSceneLoading = false;
+
+    window.addEventListener('click', async () => {
+        if (reticle.visible && !isSceneLoading) {
+            isSceneLoading = true;
+            const position = new THREE.Vector3();
+            reticle.getWorldPosition(position);
+            console.log('Reticle position:', position);
+
+            try {
+                await viewer.addSplatScene(modelPath, {
+                    'position': [0, 0, 0], // カメラ前方2メートルに配置
+                    'scale': [3, 3, 3],
+                    'rotation': [0, 0, 0, 1]
+                }).then(() => {
+                    console.log('Model successfully loaded.');
+                }).catch(error => {
+                    console.error('Error loading model:', error);
+                });
+                
+                console.log('Starting viewer...');
+                viewer.start();
+                console.log('Viewer started.');
+                console.log('Reticle position:', reticle.position);
+                console.log('Reticle world position:', reticle.getWorldPosition(new THREE.Vector3()));
+               
+            } catch (error) {
+                console.error('Failed to place Gaussian Splats model:', error);
+            } finally {
+                isSceneLoading = false; // ロード完了後にフラグをリセット
+            }
         }
     });
 }
-
