@@ -115,7 +115,7 @@ async function init() {
         // シーンのレンダリング
         renderer.render(scene, camera);
     }
-
+    session.requestAnimationFrame(onXRFrame);
     // レティクルをタップしたときにモデルを配置
     window.addEventListener('click', () => {
         if (reticle.visible && mesh) {
