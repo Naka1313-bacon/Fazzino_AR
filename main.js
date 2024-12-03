@@ -15,14 +15,14 @@ const camera = new SPLAT.Camera(
     0.03,
     100
 )
-
-
+const renderer = new SPLAT.WebGLRenderer();
+var button = document.createElement('button');
 async function convertPLYToSPLAT(url) {
     // Load PLY file into scene
     await SPLAT.PLYLoader.LoadAsync(url, scene, (progress) => {
         console.log("Loading ply file: " + progress);
     });
-    scene.rotate(new SPLAT.Quaternion(-1, 0, 0, 0))
+    scene.rotation = new SPLAT.Quaternion(-1, 0, 0, 0)
     scene.scale(new SPLAT.Vector3(12*scale, 12*scale, 12*scale))
     // Scene.data is in SPLAT format
     return scene.data;
@@ -157,7 +157,7 @@ window.addEventListener("resize", onWindowResize);
 
 document.addEventListener('DOMContentLoaded', () => {
     // ボタンの生成
-    var button = document.createElement('button');
+    
     button.id = 'ArButton';
     button.textContent = 'ENTER AR';
     button.style.cssText = `position: absolute;top:80%;left:40%;width:20%;height:2rem;`;
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', x => AR());
 
     // レンダラーの初期化
-    const renderer = new SPLAT.WebGLRenderer();
+    
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.domElement.style.background = "unset";
 });
