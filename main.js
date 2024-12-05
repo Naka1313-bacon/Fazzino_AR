@@ -104,13 +104,14 @@ async function init() {
                     'rotation': [0, 0, 0, 1]
                 }).then(() => {
                     console.log('Model successfully loaded.');
+                    console.log('Starting viewer...');
+                    viewer.start();
+                    console.log('Viewer started.');
                 }).catch(error => {
                     console.error('Error loading model:', error);
                 });
                 
-                console.log('Starting viewer...');
-                viewer.start();
-                console.log('Viewer started.');
+
                 console.log('Reticle position:', reticle.position);
                 console.log('Reticle world position:', reticle.getWorldPosition(new THREE.Vector3()));
                 console.log('Camera position:', camera.position);
