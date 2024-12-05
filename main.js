@@ -100,7 +100,7 @@ async function init() {
             try {
                 await viewer.addSplatScene(modelPath, {
                     'position': reticle.position, // カメラ前方2メートルに配置
-                    'scale': [0.1, 0.1, 0.1],
+                    'scale': [0.001, 0.001, 0.001],
                     'rotation': [0, 0, 0, 1]
                 }).then(() => {
                     console.log('Model successfully loaded.');
