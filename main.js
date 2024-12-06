@@ -33,7 +33,7 @@ async function init() {
 
     // Gaussian Splats 3D Viewer の初期化
     viewer = new GaussianSplats3D.Viewer({
-        
+    
         'webXRMode': GaussianSplats3D.WebXRMode.AR
     });
 
