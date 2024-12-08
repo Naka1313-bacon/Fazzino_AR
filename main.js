@@ -127,4 +127,9 @@ async function init() {
             }
         }
     });
+    function update() {
+        requestAnimationFrame(update);
+        viewer.update();
+        viewer.render();
+    }
 }
