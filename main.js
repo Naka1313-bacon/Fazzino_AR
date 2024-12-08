@@ -12,7 +12,7 @@ init();
 async function init() {
     // シーンの作成
     scene = new THREE.Scene();
-
+    const xrElement = document.getElementById('xr')
     // カメラの作成
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
     // レンダラーの作成
@@ -31,7 +31,13 @@ async function init() {
 
     // Gaussian Splats 3D Viewer の初期化
     viewer = new GaussianSplats3D.Viewer({
-        'xr': xr
+        rootElement: xrElement,
+		cameraUp: [0, 0, 1],
+		initialCameraPosition: [-10, 0, 2],
+		initialCameraLookAt: [0, 0, 0],
+		sharedMemoryForWorkers: false,
+		gpuAcceleratedSort: false,
+        'webXRMode': GaussianSplats3D.WebXRMode.AR,
     });
 
     // Gaussian Splats モデルのロード
