@@ -7,12 +7,7 @@ async function init() {
     const xrElement = document.getElementById('xr');
 
     viewer = new GaussianSplats3D.Viewer({
-        rootElement: xrElement,
-        cameraUp: [0, 0, 1],
-        initialCameraPosition: [-10, 0, 2],
-        initialCameraLookAt: [0, 0, 0],
-        sharedMemoryForWorkers: false,
-        gpuAcceleratedSort: false,
+
         webXRMode: GaussianSplats3D.WebXRMode.AR,
     });
 
