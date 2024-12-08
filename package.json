@@ -2,6 +2,7 @@
   "dependencies": {
     "@mkkellogg/gaussian-splats-3d": "^0.4.5",
     "gaussian-splats-3d": "^0.0.5",
+    "gle-gs3d": "^1.0.5",
     "gsplat": "^1.2.4",
     "vite": "^6.0.1"
   }
