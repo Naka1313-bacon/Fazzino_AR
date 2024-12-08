@@ -18,7 +18,23 @@ async function init() {
         scale: { x: 1, y: 1, z: 1 },
         rotate: { x: 0, y: 0, z: 0 }
       },
-
+      transformAr: {
+        scale: {
+          x: 3.0,
+          y: 3.0,
+          z: 3.0
+        },
+        position: {
+          x: 0.0,
+          y: 1.25,
+          z: -1.0
+        },
+        rotate: {
+          x: 90,
+          y: 90.0,
+          z: 0.0
+        }
+      },
   });
 
   const modelPath = './assets/fazzino3D.compressed.ply';
