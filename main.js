@@ -15,7 +15,8 @@ async function init() {
 
     // カメラの作成
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
-
+    const worldLayer = app.scene.layers.getLayerByName("World");
+    camera.camera.layers = [worldLayer.id];
     // レンダラーの作成
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -32,7 +33,12 @@ async function init() {
 
     // Gaussian Splats 3D Viewer の初期化
     viewer = new GaussianSplats3D.Viewer({
+<<<<<<< HEAD
         'xr': xr
+=======
+    
+        'webXRMode': GaussianSplats3D.WebXRMode.AR
+>>>>>>> 867abe270b770b3ef309161a80a9c40d94ed8bfb
     });
 
     // Gaussian Splats モデルのロード
@@ -98,18 +104,19 @@ async function init() {
 
             try {
                 await viewer.addSplatScene(modelPath, {
-                    'position': reticle.position, // カメラ前方2メートルに配置
-                    'scale': [0.1, 0.1, 0.1],
+                    'position': reticle.getWorldPosition(new THREE.Vector3()), 
+                    'scale': [0.001, 0.001, 0.001],
                     'rotation': [0, 0, 0, 1]
                 }).then(() => {
                     console.log('Model successfully loaded.');
+                    console.log('Starting viewer...');
+                    viewer.start();
+                    console.log('Viewer started.');
                 }).catch(error => {
                     console.error('Error loading model:', error);
                 });
                 
-                console.log('Starting viewer...');
-                viewer.start();
-                console.log('Viewer started.');
+
                 console.log('Reticle position:', reticle.position);
                 console.log('Reticle world position:', reticle.getWorldPosition(new THREE.Vector3()));
                 console.log('Camera position:', camera.position);
