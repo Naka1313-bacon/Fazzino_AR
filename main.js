@@ -104,7 +104,7 @@ async function init() {
             try {
                 await viewer.addSplatScene(modelPath, {
                     'position': reticle.getWorldPosition(new THREE.Vector3()), 
-                    'scale': [0.001, 0.001, 0.001],
+                    'scale': [8, 8, 8],
                     'rotation': [0, 0, 0, 1]
                 }).then(() => {
                     console.log('Model successfully loaded.');
