@@ -23,10 +23,9 @@ async function init() {
         position: [0, 0, -2], // AR空間で少し前方に表示
         scale: [8, 8, 8],
         rotation: [0, 0, 0, 1]
+    }).then(() => {
+        viewer.start();
     });
-
-    // `viewer.start()` を呼び出すと、ARモードでのレンダリングループが内部で開始します
-    viewer.start();
 }
 
 init();
