@@ -7,15 +7,19 @@ async function init() {
     // 独自Viewerインスタンス生成
     const viewer = new Viewer({
         rootElement: xrElement,
-        xr: 'ar', // ARモードを有効化
-        transformAr: {
-            scale: { x: 8, y: 8, z: 8 },
-            position: { x: 0, y: 0, z: -2 },
-            rotation: { x: 0, y: 0, z: 0 }
+        xr: 'ar',
+        transform: {
+          position: { x: 0, y: 0, z: 0 },
+          scale: { x: 1, y: 1, z: 1 },
+          rotate: { x: 0, y: 0, z: 0 }
         },
-        // その他必要であればここに初期パラメータを追加
-        // (cameraUp, initialCameraPosition, etc. デフォルトで問題なければ省略可)
-    });
+        transformAr: {
+          position: { x: 0, y: 0, z: -2 },
+          scale: { x: 8, y: 8, z: 8 },
+          rotate: { x: 0, y: 0, z: 0 }
+        }
+      });
+      
 
     const modelPath = './assets/fazzino3D.compressed.ply';
 
