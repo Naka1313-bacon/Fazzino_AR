@@ -9,14 +9,11 @@ let viewer;
 init();
 
 async function init() {
-    // シーンの作成
     scene = new THREE.Scene();
     const xrElement = document.getElementById('xr');
 
-    // カメラの作成
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
-    // レンダラーの作成
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.xr.enabled = true;
@@ -24,14 +21,12 @@ async function init() {
 
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(0, 10, 10);
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // 環境光を追加
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(light, ambientLight);
 
-    // ARボタンの追加
     const sessionInit = { requiredFeatures: ['hit-test'], optionalFeatures: ['local-floor', 'bounded-floor'] };
     document.body.appendChild(ARButton.createButton(renderer, sessionInit));
 
-    // Gaussian Splats 3D Viewer の初期化
     viewer = new GaussianSplats3D.Viewer({
         rootElement: xrElement,
         cameraUp: [0, 0, 1],
@@ -42,10 +37,8 @@ async function init() {
         webXRMode: GaussianSplats3D.WebXRMode.AR,
     });
 
-    // Gaussian Splats モデルのパス
     const modelPath = './assets/fazzino3D.compressed.splat';
 
-    // レティクルの作成
     const reticleGeometry = new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2);
     const reticleMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     reticle = new THREE.Mesh(reticleGeometry, reticleMaterial);
@@ -53,19 +46,12 @@ async function init() {
     reticle.visible = false;
     scene.add(reticle);
 
-    // ヒットテストソースの設定
     let hitTestSource = null;
     let hitTestSourceRequested = false;
-    let xrSessionSet = false; // セッションをviewerに渡したかどうかのフラグ
+    let isSceneLoading = false;
 
     renderer.setAnimationLoop((timestamp, frame) => {
         const session = renderer.xr.getSession();
-
-        // ARセッションをviewerに設定
-        if (session && !xrSessionSet) {
-            viewer.setXRSession(session);
-            xrSessionSet = true;
-        }
 
         if (frame) {
             const referenceSpace = renderer.xr.getReferenceSpace();
@@ -100,15 +86,12 @@ async function init() {
             }
         }
 
-        // three.jsのシーン描画
         renderer.render(scene, camera);
 
-        // viewerの更新と描画
+        // viewer の更新と描画（毎フレーム）
         viewer.update();
         viewer.render();
     });
-
-    let isSceneLoading = false;
 
     window.addEventListener('click', async () => {
         if (reticle.visible && !isSceneLoading) {
@@ -137,7 +120,7 @@ async function init() {
             } catch (error) {
                 console.error('Failed to place Gaussian Splats model:', error);
             } finally {
-                isSceneLoading = false; // ロード完了後にフラグをリセット
+                isSceneLoading = false;
             }
         }
     });
