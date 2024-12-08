@@ -11,7 +11,7 @@ async function init() {
         transformAr: {
             scale: { x: 8, y: 8, z: 8 },
             position: { x: 0, y: 0, z: -2 },
-            rotate: { x: 0, y: 0, z: 0 }
+            rotation: { x: 0, y: 0, z: 0 }
         },
         // その他必要であればここに初期パラメータを追加
         // (cameraUp, initialCameraPosition, etc. デフォルトで問題なければ省略可)
