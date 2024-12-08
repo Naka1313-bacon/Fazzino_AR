@@ -7,7 +7,7 @@ async function init() {
     // 独自Viewerインスタンス生成
     const viewer = new Viewer({
         rootElement: xrElement,
-        xr: 'ar',
+        xr: 'xr',
         transform: {
           position: { x: 0, y: 0, z: 0 },
           scale: { x: 1, y: 1, z: 1 },
