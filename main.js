@@ -14,9 +14,9 @@ async function init() {
           rotate: { x: 0, y: 0, z: 0 }
         },
         transformAr: {
-          position: { x: 0, y: 0, z: -2 },
-          scale: { x: 8, y: 8, z: 8 },
-          rotate: { x: 0, y: 0, z: 0 }
+          position: { x: 0, y: 1, z: 1 },
+          scale: { x: 1, y: 1, z: 1 },
+          rotate: { x: 90, y: 0, z: 0 }
         }
       });
       
