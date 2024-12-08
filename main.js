@@ -21,7 +21,7 @@ async function init() {
       }
   });
 
-  const modelPath = './assets/fazzino3D.compressed.ply';
+  const modelPath = './assets/fazzino3D.compressed.splat';
 
   // モデル読み込み
   await viewer.loadFile(modelPath)
