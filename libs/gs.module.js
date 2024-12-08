@@ -7283,13 +7283,7 @@ class Viewer {
                 const scale = new THREE.Vector3();
                 this.reticle.matrix.decompose(position, quaternion, scale);
         
-                // モデル（splatMesh）をレティクルの位置に移動
-                this.group.position.copy(position);
-                this.group.quaternion.copy(quaternion);
-                this.group.scale.copy(scale);
-        
-                // transformArを適用しない、または必要であれば微調整
-                // this.applyTransformAr(this.transformAr)を削除、またはコメントアウト
+
         
                 // モデルを表示
                 this.splatMesh.visible = true;
