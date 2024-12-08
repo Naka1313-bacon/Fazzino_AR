@@ -7,7 +7,12 @@ async function init() {
   const viewer = new Viewer({
       rootElement: xrElement,
       xr: 'ar', // ARモードを有効化
-      // 全体的なtransform（初期値）
+      rootElement: xrElement,
+      cameraUp: [0, 0, 1],
+      initialCameraPosition: [-10, 0, 2],
+      initialCameraLookAt: [0, 0, 0],
+      sharedMemoryForWorkers: false,
+      gpuAcceleratedSort: false,
       transform: {
         position: { x: 0, y: 0, z: 0 },
         scale: { x: 1, y: 1, z: 1 },
