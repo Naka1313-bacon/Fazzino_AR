@@ -16,7 +16,7 @@ async function init() {
       // ARモード時のモデル配置
       transformAr: {
         position: { x: 0, y: 0, z: -1 }, // カメラ前方1mに配置 (zを負方向にするとカメラ前方になる環境もあるため微調整要)
-        scale: { x: 1, y: 1, z: 1 },
+        scale: { x: 10, y: 10, z: 10 },
         rotate: { x: 0, y: 0, z: 0 }
       }
   });
