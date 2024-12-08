@@ -26,12 +26,12 @@ async function init() {
         },
         position: {
           x: 0.0,
-          y: 1.25,
-          z: -1.0
+          y: 0,
+          z: 0
         },
         rotate: {
-          x: 90,
-          y: 90.0,
+          x: 0,
+          y: 0,
           z: 0.0
         }
       },
