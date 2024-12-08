@@ -28,6 +28,7 @@ async function init() {
         .then(() => {
             // モデルロード完了後にviewerを開始
             viewer.start();
+            console.log(viewer.splatMesh);
         })
         .catch(err => {
             console.error('Error loading model:', err);
