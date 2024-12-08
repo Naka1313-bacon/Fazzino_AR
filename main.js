@@ -15,8 +15,6 @@ async function init() {
 
     // カメラの作成
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
-    const worldLayer = app.scene.layers.getLayerByName("World");
-    camera.camera.layers = [worldLayer.id];
     // レンダラーの作成
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
