@@ -13,15 +13,10 @@ async function init() {
         scale: { x: 1, y: 1, z: 1 },
         rotate: { x: 0, y: 0, z: 0 }
       },
-      // ARモード時のモデル配置
-      transformAr: {
-        position: { x: 0, y: 1.25, z: -1 }, // カメラ前方1mに配置 (zを負方向にするとカメラ前方になる環境もあるため微調整要)
-        scale: { x: 1, y: 1, z: 1 },
-        rotate: { x: 90, y: 90, z: 0 }
-      }
+
   });
 
-  const modelPath = './assets/fazzino3D.compressed.splat';
+  const modelPath = './assets/fazzino3D.compressed.ply';
 
   // モデル読み込み
   await viewer.loadFile(modelPath)
