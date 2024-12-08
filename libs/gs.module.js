@@ -7275,13 +7275,27 @@ class Viewer {
         })),
         this.geometry = new THREE.CylinderGeometry(.1,.1,.2,32).translate(0, .1, 0),
         this.controller = this.renderer.xr.getController(0),
-        this.controller.addEventListener("select", ( () => {
-            this.reticle.visible && !this.splatMesh.visible && (this.reticle.matrix.decompose(this.group.position, this.splatMesh.quaternion, this.splatMesh.scale),
-            this.applyTransformAr(this.transformAr),
-            this.splatMesh.visible = !0,
-            this.reticle.visible = !1)
-        }
-        )),
+        this.controller.addEventListener('select', () => {
+            if (this.reticle.visible && !this.splatMesh.visible) {
+                // レティクルの行列から位置・回転・スケールを分解
+                const position = new THREE.Vector3();
+                const quaternion = new THREE.Quaternion();
+                const scale = new THREE.Vector3();
+                this.reticle.matrix.decompose(position, quaternion, scale);
+        
+                // モデル（splatMesh）をレティクルの位置に移動
+                this.group.position.copy(position);
+                this.group.quaternion.copy(quaternion);
+                this.group.scale.copy(scale);
+        
+                // transformArを適用しない、または必要であれば微調整
+                // this.applyTransformAr(this.transformAr)を削除、またはコメントアウト
+        
+                // モデルを表示
+                this.splatMesh.visible = true;
+                this.reticle.visible = false;
+            }
+        });
         this.scene.add(this.controller),
         this.reticle = new THREE.Mesh(new THREE.RingGeometry(.15,.2,32).rotateX(-Math.PI / 2),new THREE.MeshBasicMaterial),
         this.reticle.matrixAutoUpdate = !1,
