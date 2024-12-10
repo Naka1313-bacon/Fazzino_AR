@@ -37,7 +37,7 @@ async function init() {
       },
   });
 
-  const modelPath = './assets/fazzino3D.compressed.splat';
+  const modelPath = './assets/converted_file.ksplat';
 
   // モデル読み込み
   await viewer.loadFile(modelPath)
