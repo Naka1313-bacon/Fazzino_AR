@@ -7224,9 +7224,6 @@ class Viewer {
         this.camera.position.copy(this.initialCameraPosition),
         this.camera.lookAt(this.initialCameraLookAt),
         this.camera.up.copy(this.cameraUp).normalize()),
-        this.camera.near = 0.001,
-        this.camera.far = 1000,
-        this.camera.updateProjectionMatrix(),
         !this.usingExternalRenderer) {
             this.renderer = new THREE.WebGLRenderer({
                 antialias: !0,
@@ -7343,8 +7340,6 @@ class Viewer {
         this.hand2.add(this.handModel2),
         this.groupQ.add(this.hand2),
         this.buttonTimer = null;
-        const e = new THREE.BoxGeometry(1,.02,.32)
-          , t = (new THREE.TextureLoader).load("webxr/gs/assets/i4.jpg");
         t.wrapS = t.wrapT = THREE.RepeatWrapping,
         t.offset.set(0, 0),
         t.repeat.set(1, 1);
