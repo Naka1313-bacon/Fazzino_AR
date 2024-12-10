@@ -7341,7 +7341,6 @@ class Viewer {
         this.groupQ.add(this.hand2),
         this.buttonTimer = null;
 
-        this.groupQ.add(this.consoleMesh),
         this.instructionText = createText("Please explore with hands.", .04),
         this.instructionText.position.set(0, 1.6, -.6),
         this.groupQ.add(this.instructionText),
