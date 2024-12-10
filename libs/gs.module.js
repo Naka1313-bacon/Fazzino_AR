@@ -7282,7 +7282,9 @@ class Viewer {
                 const quaternion = new THREE.Quaternion();
                 const scale = new THREE.Vector3();
                 this.reticle.matrix.decompose(position, quaternion, scale);
-        
+                this.splatMesh.position.copy(position);
+                this.splatMesh.quaternion.copy(quaternion);
+                this.splatMesh.scale.copy(scale);
 
         
                 // モデルを表示
