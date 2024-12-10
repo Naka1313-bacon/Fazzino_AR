@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Viewer } from 'gaussian-splats-3d';
-import ARButton from 'ARButton'
+import {ARButton} from 'ARButton'
 
 async function init() {
   // 1. WebGL Rendererの作成
