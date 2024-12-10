@@ -20,9 +20,9 @@ async function init() {
       },
       transformAr: {
         scale: {
-          x: 3.0,
-          y: 3.0,
-          z: 3.0
+          x: 1.0,
+          y: 1.0,
+          z: 1.0
         },
         position: {
           x: 0.0,

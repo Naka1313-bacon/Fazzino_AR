@@ -7290,8 +7290,7 @@ class Viewer {
                 this.splatMesh.scale.copy(scale);
 
         
-                // モデルを表示
-                this.splatMesh.material.transparent = false;
+            
                 this.splatMesh.visible = true;
                 console.log('splat visible',this.splatMesh.visible)
                 console.log('splat position',this.splatMesh.position)
