@@ -9,8 +9,7 @@ async function init() {
   renderer.xr.enabled = true;
   document.body.appendChild(renderer.domElement);
 
-  // 2. ARボタンを追加
-  document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+
 
   // 3. シーンとカメラの設定
   const scene = new THREE.Scene();
