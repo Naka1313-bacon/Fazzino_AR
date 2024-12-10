@@ -6,11 +6,7 @@ async function init() {
 
   const viewer = new Viewer({
       rootElement: xrElement,
-      xr: 'ar', // ARモードを有効化
-      rootElement: xrElement,
-      cameraUp: [0, 0, 1],
-      initialCameraPosition: [-10, 0, 2],
-      initialCameraLookAt: [0, 0, 0],
+      xr: 'ar', 
       sharedMemoryForWorkers: false,
       gpuAcceleratedSort: false,
       transform: {
