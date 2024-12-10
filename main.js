@@ -53,9 +53,12 @@ async function init() {
   async function loadModel(url) {
       try {
           await viewer.loadFile(url, {
-              position: { x: 0, y: 0, z: 0 },
+            transform: {
+              rotate: { x: 0, y: 0, z: 0 },
               scale: { x: 1, y: 1, z: 1 },
-              rotation: { x: 0, y: 0, z: 0 },
+              position: { x: 0, y: 0, z: 0 },
+          },
+      
               showLoadingSpinner: true,
           });
           console.log('Model loaded successfully.');
