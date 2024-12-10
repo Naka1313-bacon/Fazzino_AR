@@ -7289,6 +7289,7 @@ class Viewer {
                 this.splatMesh.visible = true;
                 console.log('splat visible',this.splatMesh.visible)
                 console.log('splat position',this.splatMesh.position)
+                console.log('splat',this.splatMesh)
                 this.reticle.visible = false;
             }
         });
