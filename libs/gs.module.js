@@ -7340,13 +7340,7 @@ class Viewer {
         this.hand2.add(this.handModel2),
         this.groupQ.add(this.hand2),
         this.buttonTimer = null;
-        const s = new THREE.EdgesGeometry(e)
-          , r = new THREE.LineSegments(s,new THREE.LineBasicMaterial({
-            color: 0,
-            linewidth: 1,
-            transparent: !0
-        }));
-        this.consoleMesh.add(r),
+
         this.groupQ.add(this.consoleMesh),
         this.instructionText = createText("Please explore with hands.", .04),
         this.instructionText.position.set(0, 1.6, -.6),
