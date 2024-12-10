@@ -7340,7 +7340,27 @@ class Viewer {
         this.hand2.add(this.handModel2),
         this.groupQ.add(this.hand2),
         this.buttonTimer = null;
-
+        const e = new THREE.BoxGeometry(1,.02,.32)
+          , t = (new THREE.TextureLoader).load("webxr/gs/assets/i4.jpg");
+        t.wrapS = t.wrapT = THREE.RepeatWrapping,
+        t.offset.set(0, 0),
+        t.repeat.set(1, 1);
+        const n = new THREE.MeshBasicMaterial({
+            side: THREE.DoubleSide,
+            map: t,
+            transparent: !0
+        });
+        this.consoleMesh = new THREE.Mesh(e,n),
+        this.consoleMesh.position.set(0, .6, -.3),
+        this.consoleMeshVisible = !0;
+        const s = new THREE.EdgesGeometry(e)
+          , r = new THREE.LineSegments(s,new THREE.LineBasicMaterial({
+            color: 0,
+            linewidth: 1,
+            transparent: !0
+        }));
+        this.consoleMesh.add(r),
+        this.groupQ.add(this.consoleMesh),
         this.instructionText = createText("Please explore with hands.", .04),
         this.instructionText.position.set(0, 1.6, -.6),
         this.groupQ.add(this.instructionText),
