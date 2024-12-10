@@ -7287,6 +7287,7 @@ class Viewer {
         
                 // モデルを表示
                 this.splatMesh.visible = true;
+                console.log('splat visible',this.splatMesh.visible)
                 this.reticle.visible = false;
             }
         });
