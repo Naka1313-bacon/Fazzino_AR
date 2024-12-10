@@ -78,7 +78,7 @@ async function init() {
 
   // 8. アニメーションループ
   renderer.setAnimationLoop(() => {
-      if (hitTestSource && !reticle) {
+      if (hitTestSource && reticle) {
           const frame = renderer.xr.getFrame();
           const referenceSpace = renderer.xr.getReferenceSpace();
           const hitTestResults = frame.getHitTestResults(hitTestSource);
