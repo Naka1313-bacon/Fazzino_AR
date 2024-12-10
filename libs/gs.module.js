@@ -7224,6 +7224,9 @@ class Viewer {
         this.camera.position.copy(this.initialCameraPosition),
         this.camera.lookAt(this.initialCameraLookAt),
         this.camera.up.copy(this.cameraUp).normalize()),
+        this.camera.near = 0.001,
+        this.camera.far = 1000,
+        this.camera.updateProjectionMatrix(),
         !this.usingExternalRenderer) {
             this.renderer = new THREE.WebGLRenderer({
                 antialias: !0,
