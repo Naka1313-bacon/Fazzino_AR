@@ -100,7 +100,7 @@ async function init() {
   });
 
   // モデルのロードを開始
-  await loadModel('.assets/fazzino3D.compressed.ply');
+  await loadModel('./assets/fazzino3D.compressed.ply');
 }
 
 // 初期化を実行
