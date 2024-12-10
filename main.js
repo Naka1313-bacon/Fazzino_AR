@@ -23,7 +23,12 @@ async function init() {
       useBuildInControls: false,
       camera: camera,
       rootElement: document.getElementById('xr'),
-      xr: 'ar', // ARモードを有効化
+      xr: 'ar', 
+      transform: {
+        rotate: { x: 0, y: 0, z: 0 },
+        scale: { x: 1, y: 1, z: 1 },
+        position: { x: 0, y: 0, z: 0 },
+    },
   });
 
   // 5. ヒットテストのセットアップ
@@ -53,12 +58,6 @@ async function init() {
   async function loadModel(url) {
       try {
           await viewer.loadFile(url, {
-            transform: {
-              rotate: { x: 0, y: 0, z: 0 },
-              scale: { x: 1, y: 1, z: 1 },
-              position: { x: 0, y: 0, z: 0 },
-          },
-      
               showLoadingSpinner: true,
           });
           console.log('Model loaded successfully.');
