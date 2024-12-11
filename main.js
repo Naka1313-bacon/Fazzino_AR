@@ -54,17 +54,6 @@ async function init() {
       reticle = null;
   });
 
-  // 6. モデル読み込み関数
-  async function loadModel(url) {
-      try {
-          await viewer.loadFile(url, {
-              showLoadingSpinner: true,
-          });
-          console.log('Model loaded successfully.');
-      } catch (error) {
-          console.error('Failed to load the model:', error);
-      }
-  }
 
   // 7. モデルをタッチした位置に配置
   const controller = renderer.xr.getController(0);
