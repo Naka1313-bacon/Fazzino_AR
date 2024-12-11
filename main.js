@@ -17,9 +17,6 @@ async function init() {
 
   // 4. Gaussian-Splats Viewerの設定
   const viewer = new Viewer({
-      scene: scene,
-      renderer: renderer,
-      useBuildInControls: false,
       camera: camera,
       rootElement: document.getElementById('xr'),
       xr: 'ar', 
