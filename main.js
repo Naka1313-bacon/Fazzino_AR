@@ -16,7 +16,7 @@ async function init() {
   const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
 
   // 4. Gaussian-Splats Viewerの設定
-  const viewer = GaussianSpalt3D.Viewer({
+  const viewer = new GaussianSpalt3D.Viewer({
     'initialCameraLookAt': [0.20786, -0.68154, -0.27311],
     'webXRMode': GaussianSpalt3D.WebXRMode.AR
   });
