@@ -26,7 +26,7 @@ async function init() {
         position: { x: 0, y: 0, z: 0 },
     },
   });
-  modelpath ='./assets/fazzino3D.compressed.ply'
+  const modelpath ='./assets/fazzino3D.compressed.ply'
 	viewer.loadFile(modelpath)
 	.then(() => {
 		viewer.start();	
