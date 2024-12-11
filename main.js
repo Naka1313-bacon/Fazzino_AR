@@ -16,21 +16,19 @@ async function init() {
   const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
 
   // 4. Gaussian-Splats Viewerの設定
-  const viewer = new Viewer({
-      camera: camera,
-      rootElement: document.getElementById('xr'),
-      xr: 'ar', 
-      transform: {
-        rotate: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
-        position: { x: 0, y: 0, z: 0 },
-    },
+  const viewer = Viewer({
+    'initialCameraLookAt': [0.20786, -0.68154, -0.27311],
+    'webXRMode': GaussianSplats3D.WebXRMode.AR
   });
-  const modelpath ='./assets/fazzino3D.compressed.ply'
-	viewer.loadFile(modelpath)
-	.then(() => {
-		viewer.start();	
-	});
+  let path = './assets/fazzino3D.compressed.ply';
+  viewer.addSplatScene(path, {
+      'rotation': new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0.01933, -0.75830, -0.65161).normalize(), new THREE.Vector3(0, 1, 0)).toArray(),
+      'scale': [0.25, 0.25, 0.25],
+      'position': [0, 0.5, 0]
+  })
+  .then(() => {
+      viewer.start();
+  });
 
 
 }
