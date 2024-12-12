@@ -11888,12 +11888,13 @@ class Viewer {
                 this.webXRActive = true;
                 const session = this.renderer.xr.getSession();
 
+              
                     this.hitTestSupported = true;
                     session.requestReferenceSpace('viewer').then((refSpace) => {
                         this.webXRReferenceSpace = refSpace;
+                        this.hitTestSource = source;
                         return session.requestHitTestSource({ space: this.webXRReferenceSpace });
                     })
-  
 
                 // selectイベントでユーザーがタップしたときに呼ばれる
                 session.addEventListener('select', (event) => {
