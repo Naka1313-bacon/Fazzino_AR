@@ -11888,23 +11888,12 @@ class Viewer {
                 this.webXRActive = true;
                 const session = this.renderer.xr.getSession();
 
-                if (session.supportedFeatures.has('hit-test')) {
                     this.hitTestSupported = true;
                     session.requestReferenceSpace('viewer').then((refSpace) => {
                         this.webXRReferenceSpace = refSpace;
                         return session.requestHitTestSource({ space: this.webXRReferenceSpace });
-                    }).then((source) => {
-                        this.hitTestSource = source;
-                        console.log("Hit test source obtained:", source);
-                    }).catch((err) => {
-                        console.warn("Hit test source not available:", err);
-                        this.displayHitTestNotAvailableMessage();
-                    });
-                } else {
-                    this.hitTestSupported = false;
-                    console.warn("Hit-test feature is not supported in this AR session.");
-                    this.displayHitTestNotAvailableMessage();
-                }
+                    })
+  
 
                 // selectイベントでユーザーがタップしたときに呼ばれる
                 session.addEventListener('select', (event) => {
