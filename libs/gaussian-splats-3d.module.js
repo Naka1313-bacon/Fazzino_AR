@@ -11894,7 +11894,14 @@ class Viewer {
                         this.webXRReferenceSpace = refSpace;
                         this.hitTestSource = source;
                         return session.requestHitTestSource({ space: this.webXRReferenceSpace });
-                    })
+                    }).then((source) => {
+                        this.hitTestSource = source;
+                        console.log("Hit test source obtained:", source);
+                    }).catch((err) => {
+                        console.warn("Hit test source not available:", err);
+                        this.displayHitTestNotAvailableMessage();
+                    });
+   
 
                 // selectイベントでユーザーがタップしたときに呼ばれる
                 session.addEventListener('select', (event) => {
