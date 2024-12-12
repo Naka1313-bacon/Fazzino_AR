@@ -11772,7 +11772,16 @@ class Viewer {
 
         this.usingExternalCamera = (this.dropInMode || this.camera) ? true : false;
         this.usingExternalRenderer = (this.dropInMode || this.renderer) ? true : false;
-
+        this.hitTestSource = null;
+        this.hitTestSourceRequested = false;
+        this.reticle = null;
+        this.webXRReferenceSpace = null;
+        this.reticle = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.2, 0.2),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, opacity:0.5, transparent:true })
+        );
+        this.reticle.rotation.x = - Math.PI / 2;
+        this.reticle.visible = false;
         this.initialized = false;
         this.disposing = false;
         this.disposed = false;
@@ -11816,7 +11825,7 @@ class Viewer {
         this.sceneHelper.setupMeshCursor();
         this.sceneHelper.setupFocusMarker();
         this.sceneHelper.setupControlPlane();
-
+        this.threeScene.add(this.reticle);
         this.loadingProgressBar.setContainer(this.rootElement);
         this.loadingSpinner.setContainer(this.rootElement);
         this.infoPanel.setContainer(this.rootElement);
@@ -11873,17 +11882,52 @@ class Viewer {
             }
             this.renderer.xr.addEventListener('sessionstart', (e) => {
                 this.webXRActive = true;
+                const session = this.renderer.xr.getSession();
+                session.requestReferenceSpace('viewer').then((refSpace) => {
+                    this.webXRReferenceSpace = refSpace;
+                    return session.requestHitTestSource({ space: this.webXRReferenceSpace });
+                }).then((source) => {
+                    this.hitTestSource = source;
+                }).catch((err) => {
+                    console.warn("Hit test source not available:", err);
+                });
+    
+                // selectイベントでユーザーがタップしたときに呼ばれる
+                session.addEventListener('select', (event) => {
+                    if (this.reticle && this.reticle.visible) {
+                        // reticle位置へモデル(=SplatScene)を配置
+                        this.placeSplatSceneAtReticle(0); // シーンが一つなら0番を指定
+                    }
+                });
             });
             this.renderer.xr.addEventListener('sessionend', (e) => {
                 this.webXRActive = false;
+                this.hitTestSource = null;
+                this.webXRReferenceSpace = null;
+                this.reticle.visible = false;
             });
             this.renderer.xr.enabled = true;
-            this.camera.position.copy(this.initialCameraPosition);
-            this.camera.up.copy(this.cameraUp).normalize();
-            this.camera.lookAt(this.initialCameraLookAt);
+            if (this.camera && !this.usingExternalCamera) {
+                this.camera.position.copy(this.initialCameraPosition);
+                this.camera.up.copy(this.cameraUp).normalize();
+                this.camera.lookAt(this.initialCameraLookAt);
+            }
         }
     }
-
+    placeSplatSceneAtReticle(sceneIndex = 0) {
+        // splatMeshからシーンを取得
+        const scene = this.splatMesh.getScene(sceneIndex);
+        if (!scene) return;
+    
+        // reticle位置と向きをシーンに適用
+        scene.position.copy(this.reticle.position);
+        scene.quaternion.copy(this.reticle.quaternion);
+        // 必要に応じてscale変更も可能
+        scene.scale.set(1, 1, 1);
+    
+        // 変換を更新
+        this.splatMesh.updateTransforms();
+    }
     setupControls() {
         if (this.useBuiltInControls && this.webXRMode === WebXRMode.None) {
             if (!this.usingExternalCamera) {
@@ -13095,9 +13139,31 @@ class Viewer {
 
     update(renderer, camera) {
         if (this.dropInMode) this.updateForDropInMode(renderer, camera);
-
         if (!this.initialized || !this.splatRenderReady || this.isDisposingOrDisposed()) return;
-
+    
+        // ARモード中のヒットテストでreticle更新
+        if (this.webXRActive && this.webXRMode === WebXRMode.AR && this.hitTestSource && this.renderer.xr.isPresenting) {
+            const xrFrame = this.renderer.xr.getFrame();
+            const referenceSpace = this.renderer.xr.getReferenceSpace();
+    
+            if (xrFrame && referenceSpace && this.webXRReferenceSpace) {
+                const hitTestResults = xrFrame.getHitTestResults(this.hitTestSource);
+                if (hitTestResults.length > 0) {
+                    const hitPose = hitTestResults[0].getPose(referenceSpace);
+                    if (hitPose) {
+                        this.reticle.visible = true;
+                        this.reticle.position.set(hitPose.transform.position.x,
+                                                  hitPose.transform.position.y,
+                                                  hitPose.transform.position.z);
+                        const orientation = hitPose.transform.orientation;
+                        this.reticle.quaternion.set(orientation.x, orientation.y, orientation.z, orientation.w);
+                    }
+                } else {
+                    this.reticle.visible = false;
+                }
+            }
+        }
+    
         if (this.controls) {
             this.controls.update();
             if (this.camera.isOrthographicCamera && !this.usingExternalCamera) {
@@ -13113,7 +13179,6 @@ class Viewer {
         this.updateInfoPanel();
         this.updateControlPlane();
     }
-
     updateForDropInMode(renderer, camera) {
         this.renderer = renderer;
         if (this.splatMesh) this.splatMesh.setRenderer(this.renderer);
