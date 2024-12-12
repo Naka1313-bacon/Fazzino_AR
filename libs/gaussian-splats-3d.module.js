@@ -11900,7 +11900,8 @@ class Viewer {
                 session.addEventListener('select', (event) => {
                     if (this.reticle && this.reticle.visible) {
                         // reticle位置へモデル(=SplatScene)を配置
-                        this.placeSplatSceneAtReticle(0); // シーンが一つなら0番を指定
+                        this.placeSplatSceneAtReticle(0); 
+                        this.reticle.visible = false;
                     }
                 });
             });
@@ -11927,7 +11928,7 @@ class Viewer {
         scene.position.copy(this.reticle.position);
         scene.quaternion.copy(this.reticle.quaternion);
         // 必要に応じてscale変更も可能
-        scene.scale.set(1, 1, 1);
+        scene.scale.set(0.1, 0.1, 0.1);
     
         // 変換を更新
         this.splatMesh.updateTransforms();
