@@ -13204,7 +13204,7 @@ class Viewer {
                                                   hitPose.transform.position.z);
                         const orientation = hitPose.transform.orientation;
                         this.reticle.quaternion.set(orientation.x, orientation.y, orientation.z, orientation.w);
-                        console.log("Reticle updated to position:", this.reticle.position);
+                        
                     }
                 } else {
                     this.reticle.visible = false;
