@@ -11955,7 +11955,7 @@ class Viewer {
         // reticle位置と向きをシーンに適用
         this.splatMesh.position.copy(this.reticle.position);
         this.splatMesh.quaternion.copy(this.reticle.quaternion);
-        this.splatMesh.scale.set(0.1, 0.1, 0.1); // 必要に応じてスケール調整
+        this.splatMesh.scale.set(1, 1, 1); // 必要に応じてスケール調整
 
         // 変換を更新
         this.splatMesh.updateTransforms();
