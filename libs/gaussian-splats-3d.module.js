@@ -11887,22 +11887,30 @@ class Viewer {
             this.renderer.xr.addEventListener('sessionstart', (e) => {
                 this.webXRActive = true;
                 const session = this.renderer.xr.getSession();
-                session.requestReferenceSpace('viewer').then((refSpace) => {
-                    this.webXRReferenceSpace = refSpace;
-                    return session.requestHitTestSource({ space: this.webXRReferenceSpace });
-                }).then((source) => {
-                    this.hitTestSource = source;
-                }).catch((err) => {
-                    console.warn("Hit test source not available:", err);
-                });
-    
+
+                if (session.supportedFeatures.has('hit-test')) {
+                    this.hitTestSupported = true;
+                    session.requestReferenceSpace('viewer').then((refSpace) => {
+                        this.webXRReferenceSpace = refSpace;
+                        return session.requestHitTestSource({ space: this.webXRReferenceSpace });
+                    }).then((source) => {
+                        this.hitTestSource = source;
+                        console.log("Hit test source obtained:", source);
+                    }).catch((err) => {
+                        console.warn("Hit test source not available:", err);
+                        this.displayHitTestNotAvailableMessage();
+                    });
+                } else {
+                    this.hitTestSupported = false;
+                    console.warn("Hit-test feature is not supported in this AR session.");
+                    this.displayHitTestNotAvailableMessage();
+                }
+
                 // selectイベントでユーザーがタップしたときに呼ばれる
                 session.addEventListener('select', (event) => {
+                    console.log("Select event detected");
                     if (this.reticle && this.reticle.visible) {
-                        console.log('calld splat')
-                        // reticle位置へモデル(=SplatScene)を配置
-                        this.placeSplatSceneAtReticle(0); 
-                        this.reticle.visible = false;
+                        this.placeSplatSceneAtReticle(0); // シーンが一つなら0番を指定
                     }
                 });
             });
@@ -11920,20 +11928,57 @@ class Viewer {
             }
         }
     }
+    displayHitTestNotAvailableMessage() {
+        // カスタムUI要素を使用してユーザーに通知する方法の例
+        if (!document.getElementById('hitTestWarning')) {
+            const warningDiv = document.createElement('div');
+            warningDiv.id = 'hitTestWarning';
+            warningDiv.style.position = 'absolute';
+            warningDiv.style.bottom = '20px';
+            warningDiv.style.left = '50%';
+            warningDiv.style.transform = 'translateX(-50%)';
+            warningDiv.style.padding = '10px 20px';
+            warningDiv.style.backgroundColor = 'rgba(255, 0, 0, 0.7)';
+            warningDiv.style.color = '#fff';
+            warningDiv.style.borderRadius = '5px';
+            warningDiv.style.fontSize = '14px';
+            warningDiv.style.zIndex = '1000';
+            warningDiv.innerText = "ヒットテスト機能がこのデバイスやブラウザでサポートされていません。モデルの配置ができません。";
+            this.rootElement.appendChild(warningDiv);
+        }
+    }
     placeSplatSceneAtReticle(sceneIndex = 0) {
-        // splatMeshからシーンを取得
         const scene = this.splatMesh.getScene(sceneIndex);
-        if (!scene) return;
-    
+        if (!scene) {
+            console.warn(`No SplatScene found at index ${sceneIndex}`);
+            return;
+        }
+
+        console.log(`Placing SplatScene ${sceneIndex} at reticle position`, this.reticle.position);
+
         // reticle位置と向きをシーンに適用
         scene.position.copy(this.reticle.position);
         scene.quaternion.copy(this.reticle.quaternion);
-        // 必要に応じてscale変更も可能
-        scene.scale.set(0.1, 0.1, 0.1);
-    
+        scene.scale.set(1, 1, 1); // 必要に応じてスケール調整
+
         // 変換を更新
         this.splatMesh.updateTransforms();
-    }
+
+        // ソートを再実行
+        this.runSplatSort(true, true).then(() => {
+            console.log(`SplatScene ${sceneIndex} placed and sorted.`);
+        }).catch((err) => {
+            console.error("Error during runSplatSort:", err);
+        });
+
+        // reticleを非表示にする
+        this.reticle.visible = false;
+
+        // レンダリングを強制
+        this.forceRenderNextFrame();
+
+        console.log(`SplatScene ${sceneIndex} placed at reticle position and reticle hidden.`);
+    }   
     setupControls() {
         if (this.useBuiltInControls && this.webXRMode === WebXRMode.None) {
             if (!this.usingExternalCamera) {
@@ -13146,12 +13191,12 @@ class Viewer {
     update(renderer, camera) {
         if (this.dropInMode) this.updateForDropInMode(renderer, camera);
         if (!this.initialized || !this.splatRenderReady || this.isDisposingOrDisposed()) return;
-    
+
         // ARモード中のヒットテストでreticle更新
-        if (this.webXRActive && this.webXRMode === WebXRMode.AR && this.hitTestSource && this.renderer.xr.isPresenting) {
+        if (this.webXRActive && this.webXRMode === WebXRMode.AR && this.hitTestSupported && this.hitTestSource && this.renderer.xr.isPresenting) {
             const xrFrame = this.renderer.xr.getFrame();
             const referenceSpace = this.renderer.xr.getReferenceSpace();
-    
+
             if (xrFrame && referenceSpace && this.webXRReferenceSpace) {
                 const hitTestResults = xrFrame.getHitTestResults(this.hitTestSource);
                 if (hitTestResults.length > 0) {
@@ -13163,19 +13208,23 @@ class Viewer {
                                                   hitPose.transform.position.z);
                         const orientation = hitPose.transform.orientation;
                         this.reticle.quaternion.set(orientation.x, orientation.y, orientation.z, orientation.w);
+                        console.log("Reticle updated to position:", this.reticle.position);
                     }
                 } else {
                     this.reticle.visible = false;
                 }
             }
+        } else {
+            this.reticle.visible = false; // hit-testが利用できない場合は非表示
         }
-    
+
         if (this.controls) {
             this.controls.update();
             if (this.camera.isOrthographicCamera && !this.usingExternalCamera) {
                 Viewer.setCameraPositionFromZoom(this.camera, this.camera, this.controls);
             }
         }
+
         this.runSplatSort();
         this.updateForRendererSizeChanges();
         this.updateSplatMesh();
