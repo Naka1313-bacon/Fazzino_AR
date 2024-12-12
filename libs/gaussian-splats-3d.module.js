@@ -11777,10 +11777,9 @@ class Viewer {
         this.reticle = null;
         this.webXRReferenceSpace = null;
         this.reticle = new THREE.Mesh(
-            new THREE.PlaneGeometry(0.2, 0.2),
-            new THREE.MeshBasicMaterial({ color: 0xffffff, opacity:0.5, transparent:true })
+            new THREE.RingGeometry(0.1, 0.2, 32).rotateX(-Math.PI / 2),
+            new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.75, transparent: true })
         );
-        this.reticle.rotation.x = - Math.PI / 2;
         this.reticle.visible = false;
         this.initialized = false;
         this.disposing = false;
