@@ -11899,6 +11899,7 @@ class Viewer {
                 // selectイベントでユーザーがタップしたときに呼ばれる
                 session.addEventListener('select', (event) => {
                     if (this.reticle && this.reticle.visible) {
+                        console.log('calld splat')
                         // reticle位置へモデル(=SplatScene)を配置
                         this.placeSplatSceneAtReticle(0); 
                         this.reticle.visible = false;
