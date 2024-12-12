@@ -11888,11 +11888,10 @@ class Viewer {
                 this.webXRActive = true;
                 const session = this.renderer.xr.getSession();
 
-              
+               
                     this.hitTestSupported = true;
                     session.requestReferenceSpace('viewer').then((refSpace) => {
                         this.webXRReferenceSpace = refSpace;
-                        this.hitTestSource = source;
                         return session.requestHitTestSource({ space: this.webXRReferenceSpace });
                     }).then((source) => {
                         this.hitTestSource = source;
@@ -11901,7 +11900,7 @@ class Viewer {
                         console.warn("Hit test source not available:", err);
                         this.displayHitTestNotAvailableMessage();
                     });
-   
+           
 
                 // selectイベントでユーザーがタップしたときに呼ばれる
                 session.addEventListener('select', (event) => {
