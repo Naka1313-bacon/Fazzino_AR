@@ -11878,7 +11878,11 @@ class Viewer {
             if (this.webXRMode === WebXRMode.VR) {
                 this.rootElement.appendChild(VRButton.createButton(this.renderer, webXRSessionInit));
             } else if (this.webXRMode === WebXRMode.AR) {
-                this.rootElement.appendChild(ARButton.createButton(this.renderer, webXRSessionInit));
+                const sessionInit = {
+                    requiredFeatures: ['hit-test'],
+                    ...webXRSessionInit
+                };
+                this.rootElement.appendChild(ARButton.createButton(this.renderer, sessionInit));
             }
             this.renderer.xr.addEventListener('sessionstart', (e) => {
                 this.webXRActive = true;
