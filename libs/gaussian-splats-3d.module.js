@@ -11831,8 +11831,27 @@ class Viewer {
         this.infoPanel.setContainer(this.rootElement);
 
         this.initialized = true;
+        this.onSplatMeshLoaded();
+    }
+    onSplatMeshLoaded() {
+        if (this.splatMesh) {
+            this.setSplatMeshHeight(0.24); // 高さ24cm = 0.24m
+        }
     }
 
+    
+   setSplatMeshHeight(desiredHeight) {
+       const box = new THREE.Box3().setFromObject(this.splatMesh);
+       const currentHeight = box.max.y - box.min.y;
+
+       if (currentHeight > 0) {
+           const scaleFactor = desiredHeight / currentHeight;
+           this.splatMesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
+           console.log(`splatMesh scaled by factor ${scaleFactor} to have height ${desiredHeight} meters.`);
+       } else {
+           console.warn("splatMesh has zero height, cannot scale.");
+       }
+   }
     setupCamera() {
         if (!this.usingExternalCamera) {
             const renderDimensions = new THREE.Vector2();
